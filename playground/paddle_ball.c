@@ -5,7 +5,7 @@
 #define screenWidth 1800
 #define screenHeight 1450
 #define paddleWidth screenWidth / 10
-#define paddleHeight 20
+#define paddleHeight 30
 
 typedef struct Paddle {
     Vector2 position;
@@ -34,28 +34,29 @@ int main(void) {
     Paddle paddle = {0};
     paddle.position = (Vector2){ GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f };
     paddle.size = (Vector2){ paddleWidth, paddleHeight };
-    Paddle paddle_copy = paddle;
+    Paddle paddle_copy;
 
     //bool pause = 0;
     int frameCounter = 0;
 
-    SetTargetFPS(60);
+    SetTargetFPS(120);
     //main game loop here
     while(!WindowShouldClose()) {
+        // copy old position of ball before updating ball direction (didn't work)
+        //ball_copy = ball;
         // ball keeps moving in same direction
         ball.position.x += ball.speed.x;
         ball.position.y += ball.speed.y;
+        // try placing ball ahead instead of behind?
+        Vector2 next_move = { ball.position.x + (ball.speed.x), ball.position.y + (ball.speed.y) };
+
+
         // move paddle left or right
         if (IsKeyDown(KEY_RIGHT))
             paddle.position.x += 8.0f;
         if (IsKeyDown(KEY_LEFT))
             paddle.position.x -= 8.0f;
 
-        // create copy of ball to check for collision better
-        // ball_copy = ball;
-        // ball_copy.position.x += ball.speed.x;
-        // ball_copy.position.y += ball.speed.y;
-        //Vector2 next_move = { ball.position.x + ball.speed.x, ball.position.y + ball.speed.y };
 
         //check for collision with walls
         if ((ball.position.x >= (GetScreenWidth() - ball.radius)) || (ball.position.x <= ball.radius))
@@ -63,13 +64,9 @@ int main(void) {
         if ((ball.position.y >= (GetScreenHeight() - ball.radius)) || (ball.position.y <= ball.radius))
             ball.speed.y *= -1.0f;
 
-        //paddle_copy = paddle;
-
-        
         // check for collision with paddle
-        if (CheckCollisionCircleRec(ball.position, ball.radius, (Rectangle){paddle.position.x - paddle.size.x / 2, 
+        if (CheckCollisionCircleRec(next_move, ball.radius, (Rectangle){paddle.position.x - paddle.size.x / 2, 
         paddle.position.y - paddle.size.y / 2, paddle.size.x, paddle.size.y})) {
-            //  ball.speed.x *= -1.0f;
             ball.speed.y *= -1.0f;
             // if (ball.speed.y < 0)
             //     ball.speed.y *= -1.0f;
