@@ -53,8 +53,8 @@ typedef struct Brick {
 //------------------------------------------------------------------------------------
 // Global Variables Declaration
 //------------------------------------------------------------------------------------
-static const int screenWidth = 800;
-static const int screenHeight = 450;
+static const int screenWidth = 1800;
+static const int screenHeight = 1450;
 
 static bool gameOver = false;
 static bool pause = false;

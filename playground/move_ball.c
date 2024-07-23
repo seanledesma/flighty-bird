@@ -15,9 +15,9 @@
         while(!WindowShouldClose()) {
 
             if (IsKeyDown(KEY_RIGHT))
-                ballPos.x += 2.0f;
+                ballPos.x += 8.0f;
             if (IsKeyDown(KEY_LEFT))
-                ballPos.x -= 2.0f;
+                ballPos.x -= 8.0f;
             if (IsKeyDown(KEY_UP))
                 ballPos.y -= 2.0f;  
             if (IsKeyDown(KEY_DOWN))
@@ -26,7 +26,8 @@
             BeginDrawing();
                 ClearBackground(RAYWHITE);
 
-                DrawCircleV(ballPos, 50, BLUE);
+                //DrawCircleV(ballPos, 50, BLUE);
+                DrawRectangle(ballPos.x, ballPos.y, 170, 40, BLACK);
    
             EndDrawing();
         }
