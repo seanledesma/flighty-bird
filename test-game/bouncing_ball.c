@@ -10,13 +10,13 @@ int main(void) {
 
     //Vector2 ballPosition = { GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f };
     Vector2 ballPosition = { GetScreenWidth() / (float) GetRandomValue(2, 10), GetScreenHeight() / (float) GetRandomValue(2, 10) };   
-    Vector2 ballSpeed = { 110.0f, 112.0f };
+    Vector2 ballSpeed = { 10.0f, 12.0f };
     int ballRadius = 20;
 
     //bool pause = 0;
     int frameCounter = 0;
 
-    SetTargetFPS(120);
+    SetTargetFPS(60);
     //main game loop here
     while(!WindowShouldClose()) {
 

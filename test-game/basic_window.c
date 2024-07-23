@@ -1,10 +1,10 @@
     //basic window
-    #include "raylib.h"   
+    #include "raylib.h" 
+
+    #define screenWidth 1800
+    #define screenHeight 1450
 
     int main(void) {
-        const int screenWidth = 800;
-        const int screenHeight = 450;
-
         InitWindow(screenWidth, screenHeight, "raylib basic window :)");
 
         SetTargetFPS(60);
