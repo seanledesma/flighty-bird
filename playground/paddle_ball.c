@@ -39,7 +39,7 @@ int main(void) {
     //bool pause = 0;
     int frameCounter = 0;
 
-    SetTargetFPS(120);
+    SetTargetFPS(60);
     //main game loop here
     while(!WindowShouldClose()) {
         // copy old position of ball before updating ball direction (didn't work)
@@ -65,11 +65,13 @@ int main(void) {
             ball.speed.y *= -1.0f;
 
         // check for collision with paddle
-        if (CheckCollisionCircleRec(next_move, ball.radius, (Rectangle){paddle.position.x - paddle.size.x / 2, 
-        paddle.position.y - paddle.size.y / 2, paddle.size.x, paddle.size.y})) {
+        // if (CheckCollisionCircleRec(next_move, ball.radius, (Rectangle){paddle.position.x - paddle.size.x / 2, 
+        // paddle.position.y - paddle.size.y / 2, paddle.size.x, paddle.size.y})) {
+        //     ball.speed.y *= -1.0f;
+        // }
+
+        if (CheckCollisionCircleRec(next_move, ball.radius, (Rectangle){paddle.position.x, paddle.position.y, paddle.size.x, paddle.size.y})) {
             ball.speed.y *= -1.0f;
-            // if (ball.speed.y < 0)
-            //     ball.speed.y *= -1.0f;
         }
 
 
