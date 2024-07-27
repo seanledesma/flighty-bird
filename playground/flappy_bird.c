@@ -67,6 +67,7 @@ int main(void) {
     while(!WindowShouldClose()) {
 
         if (flappy.lives > 0) {
+            // this just re-initializes the blocks positions if flappy hits a block, could be done more elegantly
             if (reset) {
                 reset = false;
 
@@ -147,7 +148,8 @@ int main(void) {
 
                     if (CheckCollisionCircleRec(flappy.position, flappy.radius, (Rectangle) {  lo_blocks[i].position.x, lo_blocks[i].position.y, lo_blocks[i].size.x, lo_blocks[i].size.y}))
                         DrawText("HIT", screenWidth / 2, screenHeight / 2, 40, WHITE);
-                        //flappy.lives--;
+                        flappy.lives--;
+                        reset = true;
                 }
 
                 for (int i = 1; i <= flappy.lives; i++) {
@@ -157,7 +159,14 @@ int main(void) {
                 DrawFPS(10, 10);
             EndDrawing();
 
-        }// else make a game over screen
+        } // else if (flappy.lives == 0) {        // else make a game over screen
+        //     BeginDrawing();
+
+        //         DrawRectangle(0, 0, screenWidth, screenHeight, GRAY);
+        //         DrawText("GAME OVER", screenWidth / 2, screenHeight / 2, 50, RED);
+
+        //     EndDrawing();
+        // }
     }
 
     CloseWindow();
