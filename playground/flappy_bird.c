@@ -1,5 +1,5 @@
 // flappy bird w Raylib!
-#include "raylib.h"   
+#include "raylib.h"
 
 #define screenWidth 1400
 #define screenHeight 1050
@@ -66,7 +66,12 @@ int main(void) {
     //main game loop here
     while(!WindowShouldClose()) {
 
-        if (flappy.lives > 0) {
+
+        if(flappy.lives <= 0) {
+            gameOver = true;
+        }
+
+        if(!gameOver) {
             if (reset) {
                 reset = false;
 
@@ -118,12 +123,17 @@ int main(void) {
                 
                 lo_blocks[i].position.x = hi_blocks[i].position.x;
             }
+        }
 
 
 
 
-            BeginDrawing();
-                ClearBackground(BLACK);
+
+
+        BeginDrawing();
+            ClearBackground(BLACK);
+
+            if(!gameOver) {
 
                 DrawCircleV(flappy.position, flappy.radius, YELLOW);
                 //DrawRectangle(flappy.position.x, flappy.position.y, 170, 40, BLACK);
@@ -154,10 +164,33 @@ int main(void) {
                     DrawCircleV((Vector2) { (i) * 100, screenHeight - 50 }, 20, YELLOW);
                 }
 
-                DrawFPS(10, 10);
-            EndDrawing();
+                
+            }else if(gameOver) {
 
-        }// else make a game over screen
+                DrawRectangle(0, 0, screenWidth, screenHeight, RED);
+                DrawText("GAME OVER", screenWidth / 2, screenHeight / 2, 80, WHITE);
+                DrawText("Press Enter to play again", screenWidth / 2, (screenHeight / 2) + 50, 50, BLACK);
+                DrawText("Press ESC to leave", screenWidth / 2, (screenHeight / 2) + 80, 50, BLACK);
+
+                //gameOver = true;
+                //flappy.lives = 3;
+
+                if (IsKeyPressed(KEY_ENTER)) {
+                    reset = true;
+                    gameOver = false;
+                    flappy.lives = 3;
+                }
+                if (IsKeyPressed(KEY_ESCAPE)) 
+                    WindowShouldClose();
+        
+            }
+
+            
+            DrawFPS(10, 10);
+        EndDrawing();
+    
+
+
     }
 
     CloseWindow();
