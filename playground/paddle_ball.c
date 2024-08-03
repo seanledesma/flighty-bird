@@ -2,8 +2,8 @@
 
 #include <raylib.h>
 
-#define screenWidth 1800
-#define screenHeight 1450
+#define screenWidth 1400
+#define screenHeight 1050
 #define paddleWidth screenWidth / 10
 #define paddleHeight 30
 
