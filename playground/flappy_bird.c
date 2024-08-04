@@ -8,6 +8,8 @@
 const Vector2 SIZE = { (float) screenWidth / 12, (float) screenHeight / 2.5 };
 const int OFFSET = 500;
 const Vector2 STARTPOS = { screenWidth / 2.0f, 0 };
+const Vector2 FLAPPYSTARTPOS = { (float) screenWidth / 6, (float) screenHeight / 4 };
+int score = 0;
 bool gameOver = false;
 bool reset = false;
 
@@ -29,7 +31,7 @@ int main(void) {
     
     // having fun with structs
     Flappy flappy = { 
-        .position = (float) screenWidth / 6, (float) screenHeight / 4,
+        .position = FLAPPYSTARTPOS,
         .jump_height = 30.0f,
         .radius = 50, 
         .falling = true,
@@ -41,20 +43,31 @@ int main(void) {
         [0].position = STARTPOS,
         [0].size = SIZE };
 
-    for (int i = 1; i < sizeof(hi_blocks) / sizeof(hi_blocks[0]); i++) {
-        hi_blocks[i].position = (Vector2) { hi_blocks[i-1].position.x + OFFSET, hi_blocks[i-1].position.y};
-        hi_blocks[i].size = hi_blocks[i-1].size;
-    }
-
     Block lo_blocks[4] = {
         [0].position = hi_blocks[0].position.x, screenHeight - hi_blocks[0].size.y,
         [0].size = SIZE };
-    
-    for (int i = 1; i < sizeof(lo_blocks) / sizeof(lo_blocks[0]); i++) {
+
+    for (int i = 1; i < sizeof(hi_blocks) / sizeof(hi_blocks[0]); i++) {
+        int stagger = GetRandomValue(-100, 100);
+        hi_blocks[i].position = (Vector2) { hi_blocks[i-1].position.x + OFFSET, hi_blocks[i-1].position.y };
+        hi_blocks[i].size = (Vector2) { hi_blocks[i-1].size.x, hi_blocks[i-1].size.y + stagger };
+
         // I guess if I were just copying position to position I wouldn't need to cast to Vector2, but since I
         // need to add the offset, it complains unless I cast as Vector2
-        lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, lo_blocks[i-1].position.y};
-        lo_blocks[i].size = lo_blocks[i-1].size;
+        
+        if (stagger <= 0){
+            lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, lo_blocks[i-1].position.y + stagger };
+            lo_blocks[i].size = (Vector2) { lo_blocks[i-1].size.x, lo_blocks[i-1].size.y + stagger };
+        }else {
+            lo_blocks[i].size = (Vector2) { lo_blocks[i-1].size.x, lo_blocks[i-1].size.y - stagger };
+            lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, lo_blocks[i-1].position.y - stagger };
+        }
+    }
+
+    
+    
+    for (int i = 1; i < sizeof(lo_blocks) / sizeof(lo_blocks[0]); i++) {
+        
     }
         
 
@@ -73,7 +86,12 @@ int main(void) {
 
         if(!gameOver) {
             if (reset) {
-                reset = false;
+                reset = false;  
+
+                score = 0;
+
+                flappy.position = FLAPPYSTARTPOS;
+                flappy.falling = true;
 
                 hi_blocks[0].position = STARTPOS;
                 hi_blocks[0].size = SIZE;
@@ -114,14 +132,32 @@ int main(void) {
                 flappy.position.y += 2;
             }
 
-            // this bit makes the blocks dissapear on the left, then reappear on the right
+            //reset if flappy falls below the world or flies above
+            if ((int) (flappy.position.y - flappy.radius) >= (int) screenHeight || (int) (flappy.position.y + flappy.radius) <= 0) {
+                reset = true;
+                flappy.lives--;
+            }
+
+            
             for (int i = 0; i < sizeof(hi_blocks) / sizeof(hi_blocks[0]); i++) {
+                // staggering blocks to provide challenge
+                int stagger = GetRandomValue(250, 600);
+                //hi_blocks[i].size.y = stagger;
+                //lo_blocks[i].size.y = screenHeight - stagger;
+
+                // this bit makes the blocks dissapear on the left, then reappear on the right
                 if (hi_blocks[i].position.x > 0 - hi_blocks[i].size.x)
                     hi_blocks[i].position.x -= 2;
                 else 
                     hi_blocks[i].position.x = screenWidth;
                 
                 lo_blocks[i].position.x = hi_blocks[i].position.x;
+
+                // if flappy's backend is equal to the front end of a block (meaning flappy passed a block) update score
+                // don't ask my why I'm multiplying radius by 3 cus IDK. 
+                // BUG: sometimes adds more than one to score :(
+                if ((int) (hi_blocks[i].position.x + SIZE.x) == (int) ((screenWidth / 4) - (3 * flappy.radius)))
+                    score++;
             }
         }
 
@@ -148,29 +184,33 @@ int main(void) {
 
 
                     if (CheckCollisionCircleRec(flappy.position, flappy.radius, (Rectangle) {  hi_blocks[i].position.x, hi_blocks[i].position.y, hi_blocks[i].size.x, hi_blocks[i].size.y})) {
-                        DrawText("HIT", screenWidth / 2, screenHeight / 2, 40, WHITE);
+                        //DrawText("HIT", screenWidth / 2, screenHeight / 2, 40, WHITE);
                         flappy.lives--;
                         reset = true;
 
                     }
                         
-
-                    if (CheckCollisionCircleRec(flappy.position, flappy.radius, (Rectangle) {  lo_blocks[i].position.x, lo_blocks[i].position.y, lo_blocks[i].size.x, lo_blocks[i].size.y}))
-                        DrawText("HIT", screenWidth / 2, screenHeight / 2, 40, WHITE);
-                        //flappy.lives--;
+                    if (CheckCollisionCircleRec(flappy.position, flappy.radius, (Rectangle) {  lo_blocks[i].position.x, lo_blocks[i].position.y, lo_blocks[i].size.x, lo_blocks[i].size.y})) {
+                        flappy.lives--;
+                        reset = true;
+                    }
                 }
 
+                // drawing a visual representation of remaining lives
                 for (int i = 1; i <= flappy.lives; i++) {
-                    DrawCircleV((Vector2) { (i) * 100, screenHeight - 50 }, 20, YELLOW);
+                    // since 0 on x coords is left side, multiply i by 100 to space each life 100 apart
+                    DrawCircleV((Vector2) { i * 100, screenHeight - 50 }, 20, YELLOW);
                 }
 
+                // draw score
+                DrawText(TextFormat("Score: %d", score), screenWidth - 150, 50, 20, YELLOW);
                 
             }else if(gameOver) {
 
                 DrawRectangle(0, 0, screenWidth, screenHeight, RED);
-                DrawText("GAME OVER", screenWidth / 2, screenHeight / 2, 80, WHITE);
-                DrawText("Press Enter to play again", screenWidth / 2, (screenHeight / 2) + 50, 50, BLACK);
-                DrawText("Press ESC to leave", screenWidth / 2, (screenHeight / 2) + 80, 50, BLACK);
+                DrawText("GAME OVER", screenWidth / 2, screenHeight / 2, 40, BLACK);
+                DrawText("Press Enter to play again", screenWidth / 2, (screenHeight / 2) + 50, 20, WHITE);
+                DrawText("Press ESC to leave", screenWidth / 2, (screenHeight / 2) + 80, 20, WHITE);
 
                 //gameOver = true;
                 //flappy.lives = 3;
