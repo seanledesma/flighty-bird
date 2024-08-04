@@ -85,9 +85,9 @@ int main(void) {
 
     
     
-    for (int i = 1; i < sizeof(lo_blocks) / sizeof(lo_blocks[0]); i++) {
+    // for (int i = 1; i < sizeof(lo_blocks) / sizeof(lo_blocks[0]); i++) {
         
-    }
+    // }
         
 
     Vector2 temp_pos = { flappy.position.x, flappy.position.y };
@@ -106,8 +106,9 @@ int main(void) {
         if(!gameOver) {
             if (reset) {
                 reset = false;  
-
-                score = 0;
+                
+                //decided that I want the score to keep going over all three attempts
+                //score = 0;
 
                 flappy.position = FLAPPYSTARTPOS;
                 flappy.falling = true;
@@ -160,7 +161,7 @@ int main(void) {
             
             for (int i = 0; i < sizeof(hi_blocks) / sizeof(hi_blocks[0]); i++) {
                 // staggering blocks to provide challenge
-                int stagger = GetRandomValue(250, 600);
+                
                 //hi_blocks[i].size.y = stagger;
                 //lo_blocks[i].size.y = screenHeight - stagger;
 
@@ -168,9 +169,18 @@ int main(void) {
                 if (hi_blocks[i].position.x > 0 - hi_blocks[i].size.x)
                     hi_blocks[i].position.x -= 2;
                 else 
-                    hi_blocks[i].position.x = screenWidth;
+                    hi_blocks[i].position.x = hi_blocks[i-1].position.x + OFFSET;
                 
                 lo_blocks[i].position.x = hi_blocks[i].position.x;
+
+                if ((int) hi_blocks[i].position.x == screenWidth) {
+                    int stagger = GetRandomValue(150, 700);
+                    hi_blocks[i].size.y = stagger;
+                
+                    lo_blocks[i].position.y = stagger + GAP;
+                    lo_blocks[i].size.y = screenHeight - (stagger + GAP);
+                }
+                
 
                 // if flappy's backend is equal to the front end of a block (meaning flappy passed a block) update score
                 // don't ask my why I'm multiplying radius by 3 cus IDK. 
@@ -223,11 +233,19 @@ int main(void) {
 
                 // draw score
                 DrawText(TextFormat("Score: %d", score), screenWidth - 150, 50, 20, YELLOW);
+
+                //debugging
+                DrawText(TextFormat("0 x pos: %d", (int) hi_blocks[0].position.x), 5, 30, 20, WHITE);
+                DrawText(TextFormat("1 x pos: %d", (int) hi_blocks[1].position.x), 5, 60, 20, WHITE);
+                DrawText(TextFormat("2 x pos: %d", (int) hi_blocks[2].position.x), 5, 90, 20, WHITE);
+                DrawText(TextFormat("3 x pos: %d", (int) hi_blocks[3].position.x), 5, 120, 20, WHITE);
+
                 
             }else if(gameOver) {
 
                 DrawRectangle(0, 0, screenWidth, screenHeight, RED);
-                DrawText("GAME OVER", screenWidth / 2, screenHeight / 2, 40, BLACK);
+                DrawText(TextFormat("SCORE: %d", score), screenWidth / 2, (screenHeight / 2) - 65, 50, YELLOW);
+                DrawText("GAME OVER :'(", screenWidth / 2, screenHeight / 2, 40, BLACK);
                 DrawText("Press Enter to play again", screenWidth / 2, (screenHeight / 2) + 50, 20, WHITE);
                 DrawText("Press ESC to leave", screenWidth / 2, (screenHeight / 2) + 80, 20, WHITE);
 
