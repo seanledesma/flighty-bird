@@ -7,6 +7,7 @@
 // This is used for the initial size of blocks, I did it this way to have only one spot to change size, also wanted to play with const globals
 const Vector2 SIZE = { (float) screenWidth / 12, (float) screenHeight / 2.5 };
 const int OFFSET = 500;
+const int GAP = 200;
 const Vector2 STARTPOS = { screenWidth / 2.0f, 0 };
 const Vector2 FLAPPYSTARTPOS = { (float) screenWidth / 6, (float) screenHeight / 4 };
 int score = 0;
@@ -47,21 +48,39 @@ int main(void) {
         [0].position = hi_blocks[0].position.x, screenHeight - hi_blocks[0].size.y,
         [0].size = SIZE };
 
+
+/*
+    so lots going on here, but basically the high blocks y position starts at
+    0, it's y size (hight) needs to be random for each one, then there needs to be a gap
+    between the top and the lo block, so you place the lo block position at the hi blocks 
+    size (not position, because y pos is 0 for hi blocks) plus the GAP, but then we usually have a gap at the bottom of the screen,
+    so you need to make the y size (height) equal to the entire screenHeight minus the hi block size 
+    plus the gap, so it reaches the bottom.
+
+*/
+
     for (int i = 1; i < sizeof(hi_blocks) / sizeof(hi_blocks[0]); i++) {
-        int stagger = GetRandomValue(-100, 100);
-        hi_blocks[i].position = (Vector2) { hi_blocks[i-1].position.x + OFFSET, hi_blocks[i-1].position.y };
-        hi_blocks[i].size = (Vector2) { hi_blocks[i-1].size.x, hi_blocks[i-1].size.y + stagger };
+        int stagger = GetRandomValue(150, 500);
+        hi_blocks[i].position = (Vector2) { hi_blocks[i-1].position.x + OFFSET, 0 };
+        hi_blocks[i].size = (Vector2) { hi_blocks[i-1].size.x, stagger };
 
         // I guess if I were just copying position to position I wouldn't need to cast to Vector2, but since I
         // need to add the offset, it complains unless I cast as Vector2
+        //lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, lo_blocks[i-1].position.y - stagger };
         
-        if (stagger <= 0){
-            lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, lo_blocks[i-1].position.y + stagger };
-            lo_blocks[i].size = (Vector2) { lo_blocks[i-1].size.x, lo_blocks[i-1].size.y + stagger };
-        }else {
-            lo_blocks[i].size = (Vector2) { lo_blocks[i-1].size.x, lo_blocks[i-1].size.y - stagger };
-            lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, lo_blocks[i-1].position.y - stagger };
-        }
+        lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, stagger + GAP };
+        lo_blocks[i].size = (Vector2) { lo_blocks[i-1].size.x, screenHeight - (stagger + GAP) };
+        
+        // if (stagger <= 0){
+            
+        //     lo_blocks[i].size = (Vector2) { lo_blocks[i-1].size.x, lo_blocks[i-1].size.y + stagger };
+        //     //lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, lo_blocks[i-1].position.y + stagger };
+        //     lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, screenHeight + stagger };
+        // }else {
+        //     lo_blocks[i].size = (Vector2) { lo_blocks[i-1].size.x, lo_blocks[i-1].size.y - stagger };
+        //     //lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, lo_blocks[i-1].position.y - stagger };
+        //     lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, screenHeight - stagger };
+        // }
     }
 
     
@@ -96,20 +115,20 @@ int main(void) {
                 hi_blocks[0].position = STARTPOS;
                 hi_blocks[0].size = SIZE;
 
-                for (int i = 1; i < sizeof(hi_blocks) / sizeof(hi_blocks[0]); i++) {
-                    hi_blocks[i].position = (Vector2) { hi_blocks[i-1].position.x + OFFSET, hi_blocks[i-1].position.y};
-                    hi_blocks[i].size = hi_blocks[i-1].size;
-                }
-
                 lo_blocks[0].position = (Vector2) { hi_blocks[0].position.x, screenHeight - hi_blocks[0].size.y };
                 lo_blocks[0].size = SIZE;
-                
-                for (int i = 1; i < sizeof(lo_blocks) / sizeof(lo_blocks[0]); i++) {
-                    // I guess if I were just copying position to position I wouldn't need to cast to Vector2, but since I
-                    // need to add the offset, it complains unless I cast as Vector2
-                    lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, lo_blocks[i-1].position.y};
-                    lo_blocks[i].size = lo_blocks[i-1].size;
+
+                for (int i = 1; i < sizeof(hi_blocks) / sizeof(hi_blocks[0]); i++) {
+                    int stagger = GetRandomValue(150, 500);
+                    hi_blocks[i].position = (Vector2) { hi_blocks[i-1].position.x + OFFSET, 0 };
+                    hi_blocks[i].size = (Vector2) { hi_blocks[i-1].size.x, stagger };
+                    
+                    lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, stagger + GAP };
+                    lo_blocks[i].size = (Vector2) { lo_blocks[i-1].size.x, screenHeight - (stagger + GAP) };
                 }
+
+                
+                
             }
 
         
