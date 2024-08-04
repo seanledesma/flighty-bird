@@ -66,32 +66,13 @@ int main(void) {
 
         // I guess if I were just copying position to position I wouldn't need to cast to Vector2, but since I
         // need to add the offset, it complains unless I cast as Vector2
-        //lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, lo_blocks[i-1].position.y - stagger };
         
         lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, stagger + GAP };
         lo_blocks[i].size = (Vector2) { lo_blocks[i-1].size.x, screenHeight - (stagger + GAP) };
-        
-        // if (stagger <= 0){
-            
-        //     lo_blocks[i].size = (Vector2) { lo_blocks[i-1].size.x, lo_blocks[i-1].size.y + stagger };
-        //     //lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, lo_blocks[i-1].position.y + stagger };
-        //     lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, screenHeight + stagger };
-        // }else {
-        //     lo_blocks[i].size = (Vector2) { lo_blocks[i-1].size.x, lo_blocks[i-1].size.y - stagger };
-        //     //lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, lo_blocks[i-1].position.y - stagger };
-        //     lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, screenHeight - stagger };
-        // }
-    }
+    }        
 
-    
-    
-    // for (int i = 1; i < sizeof(lo_blocks) / sizeof(lo_blocks[0]); i++) {
-        
-    // }
-        
-
+    // needed to make flappy jump correctly
     Vector2 temp_pos = { flappy.position.x, flappy.position.y };
-
 
     SetTargetFPS(60);
 
@@ -127,12 +108,7 @@ int main(void) {
                     lo_blocks[i].position = (Vector2) { lo_blocks[i-1].position.x + OFFSET, stagger + GAP };
                     lo_blocks[i].size = (Vector2) { lo_blocks[i-1].size.x, screenHeight - (stagger + GAP) };
                 }
-
-                
-                
             }
-
-        
 
             // make Flappy jump
             if (IsKeyPressed(KEY_SPACE)) {
@@ -160,11 +136,7 @@ int main(void) {
 
             
             for (int i = 0; i < sizeof(hi_blocks) / sizeof(hi_blocks[0]); i++) {
-                // staggering blocks to provide challenge
                 
-                //hi_blocks[i].size.y = stagger;
-                //lo_blocks[i].size.y = screenHeight - stagger;
-
                 // this bit makes the blocks dissapear on the left, then reappear on the right
                 if (hi_blocks[i].position.x > 0 - hi_blocks[i].size.x)
                     hi_blocks[i].position.x -= 2;
@@ -173,6 +145,7 @@ int main(void) {
                 
                 lo_blocks[i].position.x = hi_blocks[i].position.x;
 
+                // staggering blocks to provide challenge
                 if ((int) hi_blocks[i].position.x == screenWidth) {
                     int stagger = GetRandomValue(150, 700);
                     hi_blocks[i].size.y = stagger;
@@ -191,32 +164,21 @@ int main(void) {
         }
 
 
-
-
-
-
         BeginDrawing();
             ClearBackground(BLACK);
 
             if(!gameOver) {
 
                 DrawCircleV(flappy.position, flappy.radius, YELLOW);
-                //DrawRectangle(flappy.position.x, flappy.position.y, 170, 40, BLACK);
-                
-                // DrawRectangleV(hi_blocks[0].position, hi_blocks[0].size, GRAY);
-                // DrawRectangleV(lo_blocks[0].position, lo_blocks[0].size, GRAY);
-
 
                 for (int i = 0; i < sizeof(hi_blocks) / sizeof(hi_blocks[0]); i++) {
                     DrawRectangleV(hi_blocks[i].position, hi_blocks[i].size, LIGHTGRAY);
                     DrawRectangleV(lo_blocks[i].position, lo_blocks[i].size, LIGHTGRAY);
 
-
+                    // checking flappy + pipe collision
                     if (CheckCollisionCircleRec(flappy.position, flappy.radius, (Rectangle) {  hi_blocks[i].position.x, hi_blocks[i].position.y, hi_blocks[i].size.x, hi_blocks[i].size.y})) {
-                        //DrawText("HIT", screenWidth / 2, screenHeight / 2, 40, WHITE);
                         flappy.lives--;
                         reset = true;
-
                     }
                         
                     if (CheckCollisionCircleRec(flappy.position, flappy.radius, (Rectangle) {  lo_blocks[i].position.x, lo_blocks[i].position.y, lo_blocks[i].size.x, lo_blocks[i].size.y})) {
@@ -235,10 +197,10 @@ int main(void) {
                 DrawText(TextFormat("Score: %d", score), screenWidth - 150, 50, 20, YELLOW);
 
                 //debugging
-                DrawText(TextFormat("0 x pos: %d", (int) hi_blocks[0].position.x), 5, 30, 20, WHITE);
-                DrawText(TextFormat("1 x pos: %d", (int) hi_blocks[1].position.x), 5, 60, 20, WHITE);
-                DrawText(TextFormat("2 x pos: %d", (int) hi_blocks[2].position.x), 5, 90, 20, WHITE);
-                DrawText(TextFormat("3 x pos: %d", (int) hi_blocks[3].position.x), 5, 120, 20, WHITE);
+                // DrawText(TextFormat("0 x pos: %d", (int) hi_blocks[0].position.x), 5, 30, 20, WHITE);
+                // DrawText(TextFormat("1 x pos: %d", (int) hi_blocks[1].position.x), 5, 60, 20, WHITE);
+                // DrawText(TextFormat("2 x pos: %d", (int) hi_blocks[2].position.x), 5, 90, 20, WHITE);
+                // DrawText(TextFormat("3 x pos: %d", (int) hi_blocks[3].position.x), 5, 120, 20, WHITE);
 
                 
             }else if(gameOver) {
@@ -249,8 +211,6 @@ int main(void) {
                 DrawText("Press Enter to play again", screenWidth / 2, (screenHeight / 2) + 50, 20, WHITE);
                 DrawText("Press ESC to leave", screenWidth / 2, (screenHeight / 2) + 80, 20, WHITE);
 
-                //gameOver = true;
-                //flappy.lives = 3;
 
                 if (IsKeyPressed(KEY_ENTER)) {
                     reset = true;
