@@ -1,4 +1,4 @@
-This is just a little repo to play around with raylib!
+This is just a little game to play around with raylib!
 
 basic command to compile for raylib:
 
