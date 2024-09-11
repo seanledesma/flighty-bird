@@ -1,5 +1,7 @@
 This is just a little game to play around with raylib!
 
+Check out a live demo [Here]([url](https://seanledesma.com/flighty_bird/flighty))
+
 basic command to compile for raylib:
 
 gcc game.c -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
