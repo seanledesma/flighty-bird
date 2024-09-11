@@ -1,6 +1,6 @@
 This is just a little game to play around with raylib!
 
-Check out a live demo [Here]([url](https://seanledesma.com/flighty_bird/flighty))
+Check out a live demo ![Here]([url](https://seanledesma.com/flighty_bird/flighty))
 
 basic command to compile for raylib:
 
