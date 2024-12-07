@@ -1,8 +1,8 @@
 // flappy bird w Raylib!
 #include "raylib.h"
 
-#define screenWidth 1400
-#define screenHeight 1050
+#define screenWidth 1200
+#define screenHeight 800
 
 // This is used for the initial size of blocks, I did it this way to have only one spot to change size, also wanted to play with const globals
 const Vector2 SIZE = { (float) screenWidth / 12, (float) screenHeight / 2.5 };
